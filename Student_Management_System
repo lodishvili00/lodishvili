@@ -1,0 +1,107 @@
+import csv
+
+# Define the CSV file path
+csv_file = 'students.csv'
+
+def load_students():
+    """Load student records from the CSV file."""
+    try:
+        with open(csv_file, 'r', newline='') as file:
+            reader = csv.DictReader(file)
+            students = list(reader)
+    except FileNotFoundError:
+        students = []
+    return students
+
+def save_students(students):
+    """Save student records to the CSV file."""
+    with open(csv_file, 'w', newline='') as file:
+        fieldnames = ['id', 'name', 'age', 'grade']
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(students)
+
+def add_student():
+    """Add a new student record."""
+    print("\nEnter student details:")
+    name = input("Name: ")
+    age = input("Age: ")
+    grade = input("Grade: ")
+
+    students = load_students()
+    student_ids = [int(student['id']) for student in students]
+    new_id = max(student_ids) + 1 if student_ids else 1
+
+    new_student = {'id': str(new_id), 'name': name, 'age': age, 'grade': grade}
+    students.append(new_student)
+    save_students(students)
+    print("Student added successfully.")
+
+def view_students():
+    """View all student records."""
+    students = load_students()
+    if students:
+        print("\nStudent Records:")
+        for student in students:
+            print(f"ID: {student['id']}, Name: {student['name']}, Age: {student['age']}, Grade: {student['grade']}")
+    else:
+        print("No student records found.")
+
+def update_student():
+    """Update an existing student record."""
+    id_to_update = input("\nEnter student ID to update: ")
+    students = load_students()
+    for student in students:
+        if student['id'] == id_to_update:
+            print("\nEnter new student details:")
+            student['name'] = input("New Name: ")
+            student['age'] = input("New Age: ")
+            student['grade'] = input("New Grade: ")
+            save_students(students)
+            print("Student record updated successfully.")
+            return
+    print("Student ID not found.")
+
+def delete_student():
+    """Delete an existing student record."""
+    id_to_delete = input("\nEnter student ID to delete: ")
+    students = load_students()
+    for student in students:
+        if student['id'] == id_to_delete:
+            students.remove(student)
+            save_students(students)
+            print("Student record deleted successfully.")
+            return
+    print("Student ID not found.")
+
+def main_menu():
+    """Display the main menu."""
+    print("\nStudent Management System")
+    print("1. Add Student")
+    print("2. View Students")
+    print("3. Update Student")
+    print("4. Delete Student")
+    print("5. Exit")
+
+def main():
+    """Main program loop."""
+    while True:
+        main_menu()
+        choice = input("Enter your choice (1-5): ")
+
+        if choice == '1':
+            add_student()
+        elif choice == '2':
+            view_students()
+        elif choice == '3':
+            update_student()
+        elif choice == '4':
+            delete_student()
+        elif choice == '5':
+            print("Exiting program.")
+            break
+        else:
+            print("Invalid choice. Please enter a number between 1 and 5.")
+
+if __name__ == "__main__":
+    main()
